@@ -8,9 +8,9 @@ J  = 0.01;      % Moment of inertia (kg*m^2)
 B  = 0.02;      % Viscous damping coefficient (N*m*s/rad)
 
 % PID Controller Gains (starting values for tuning)
-Kp = 15;
-Ki = 5;
-Kd = 1.2;
+% Kp = 15;
+% Ki = 5;
+% Kd = 1.2;
 
 G = tf(Kt, conv([L R], [J B 0]));
 
@@ -45,3 +45,31 @@ fprintf('Settling time: %.2f s\n', info.SettlingTime);
 figure
 step(T)
 grid on
+
+motor = tf(Kt, [L R]);
+gimbal = tf(1, [J B 0]);
+
+% now, if we add integral control to improve steady state response, we get
+% the characteristic equation as: Js^3 + Bs^2 + (Kt*Kp / R)s + (Kt*Ki / R) = 0
+
+t = 0:0.01:60;  % defining of time points to check system response at
+Td = 0.1;
+Kp = Kp_test;                   % Use the P gain selected above
+Ki_values = [0 0.05 0.1 0.2 0.4 0.6 0.8 1.0];
+
+figure
+hold on
+
+for Ki = Ki_values
+    C = tf([Kp Ki], [1 0]);
+
+    T_dist = gimbal / (1 + C*motor*gimbal);
+
+    step(Td*T_dist, t)
+end
+
+title('Disturbance response for different Ki values')
+xlabel('Time (s)')
+ylabel('Angle deviation (rad)')
+legend('P only', 'Ki = 0.05', 'Ki = 0.1','Ki = 0.2', 'Ki = 0.4', 'Ki = 0.6', 'Ki = 0.8', 'Ki = 1.0')
+hold off
