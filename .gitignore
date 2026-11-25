@@ -1,0 +1,20 @@
+# Simulink build & cache files
+slprj/
+*.slxc
+*.autosave
+*.slx.autosave
+*.mdl.autosave
+
+# MATLAB temporary & backup files
+*.asv
+*.m~
+*.mat~
+
+# Compiled MEX & generated code
+*.mex*
+*_ert_rtw/
+*_grt_rtw/
+
+# OS junk files
+.DS_Store
+Thumbs.db
